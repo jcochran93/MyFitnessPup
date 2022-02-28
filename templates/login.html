@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Document</title>
+{% endblock %}
+
+
+{% block body %}
+
+<div class="window">
+        <div class="main-login">
+            
+            <h2 class="login">Login</h2>
+            <!-- may need to add action -->
+            <form class="login"  method="post">
+                <input type="text" name="username" id="username" required placeholder="username">
+                <input type="password" name="password" id="password" required placeholder="password">
+                <input type="submit" value="Login">
+            </form>
+            <a href="{{ url_for('userRegister') }}" class="text">Register</a>
+        </div>
+    </div>
+    <a href="{{ url_for('index') }}" class="test">Test</a>
+{% endblock %}
+    
