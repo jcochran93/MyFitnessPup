@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Lose It</title>
+{% endblock %}
+
+{% block body %}
+
+    <div class="header">
+        <a href="#">
+            <div class="head-btns">Home</div>
+        </a>
+        <a href="#progress">
+            <div class="head-btns">Progress</div>
+        </a>
+        <a href="#">
+            <div class="head-btns">Pets</div>
+        </a>
+        <a href="{{ url_for('userLogin') }}">
+            <div class="head-btns">Sign out</div>
+        </a>
+        
+    </div>
+
+
+    <div class="meal-items">
+        <div class="meal-entry">
+            <div class="meal-title">
+                <h3>Breakfast</h3>
+            </div>
+            
+            {% for food in foods %}
+                {% if food.meal == 'breakfast' %}
+                    <div class="logged-item"> 
+                        <div class="item-name">
+                            {{ food.brandName }}
+                        </div>
+                        <div class="cal-amount">
+                            {{ food.calories }}
+                        </div>
+
+                        <div class="delete-btn">
+                            <a href="/delete/{{food.id}}"> X </a>
+                        </div>        
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+        </div>
+        <div class="meal-entry">
+            <div class="meal-title">
+                <h3>Lunch</h3>
+                
+            </div>
+
+            {% for food in foods %}
+                {% if food.meal == 'lunch' %}
+                    <div class="logged-item"> 
+                        <div class="item-name">
+                            {{ food.brandName }}
+                        </div>
+                        <div class="cal-amount">
+                            {{ food.calories }}
+                        </div>
+
+                        <div class="delete-btn">
+                            <a href="/delete/{{food.id}}"> X </a>
+                        </div>        
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+        </div>
+        <div class="meal-entry">
+            <div class="meal-title">
+                <h3>Dinner</h3>
+                
+            </div>
+            {% for food in foods %}
+                {% if food.meal == 'dinner' %}
+                    <div class="logged-item"> 
+                        <div class="item-name">
+                            {{ food.brandName }}
+                        </div>
+                        <div class="cal-amount">
+                            {{ food.calories }}
+                        </div>
+
+                        <div class="delete-btn">
+                            <a href="/delete/{{food.id}}"> X </a>
+                        </div>        
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+
+        <div class="meal-entry">
+            <div class="meal-title">
+                <h3>Exercise</h3>
+            </div>
+        
+            </div>
+            {% for food in foods %}
+                {% if food.meal == 'exercise' %}
+                    <div class="logged-item"> 
+                        <div class="item-name">
+                            {{ food.brandName }}
+                        </div>
+
+                        <div class="delete-btn">
+                            <a href="/delete/{{food.id}}"> X </a>
+                        </div>        
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+
+
+        </div>        
+    </div>
+
+    <div class="calorie-window-container">
+        <div class="calorie-window">
+            <div class="head">
+                <!-- Add {{ petName }}'s Meals Here -->
+                Add Meals Here
+
+            </div>
+
+            <div class="food-input">
+                <form action="/" method="POST">
+                    <input type="text" class="food-search" placeholder="Add Food or Exercise..." id="content" name="content">
+                    <input type="text" class="cals" placeholder="Calories" id="calories" name="calories">
+                    <select name="meal" id="meal">
+                        <option disabled selected value="">Meal</option>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="exercise">Exercise</option>
+                    </select>
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+
+            <div class="cal-totals">
+                <div class="budget">
+                    <div>Budget:</div>
+                    <div class="cal-amount">1200</div>
+                </div>
+                
+                <div class="total"> 
+                    <div>Total:</div>
+                    <div class="cal-amount">{{ foods|sum(attribute='calories') }}</div>
+                </div>
+            </div>
+        </div>
+
+
+        
+
+    </div>
+
+    
+
+
+
+
+
+    <div class="progress" id="progress">
+        <h3>Progress</h3>
+        <div class="chart">Weight Data</div>
+        <div id="tester" style="width:600px;height:400px;"></div>
+    </div>
+
+
+
+{% endblock %}
