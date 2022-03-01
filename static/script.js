@@ -1,11 +1,5 @@
 TESTER = document.getElementById('tester');
 
-// Plotly.plot( TESTER, [{
-//     x: [1, 2, 3, 4, 5],
-//     y: [88, 85, 86, 84, 85] }], { 
-//     margin: { t: 0 } }, {staticPlot: true});
-
-
 var data = [{
     type: "line",
     y: [88, 85, 86, 84, 85],
@@ -20,3 +14,13 @@ var layout = {xaxis: {type: 'date'},
 var config = {staticPlot: true}
 
 Plotly.newPlot(TESTER, data, layout, config);
+
+let userName = document.getElementById('userName')
+
+// fetch('/weight-data/1')
+// .then(res => res.json())
+// .then(user => {
+//     userName.innerHTML = user.user
+// })
+
+// console.log(user)

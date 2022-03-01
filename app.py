@@ -1,12 +1,27 @@
 from flask import Flask, jsonify, request, render_template, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import InputRequired, Length, ValidationError
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 
+app.config['SECRET_KEY'] = 'thisIsASecretKey'
+
 db = SQLAlchemy(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+@login_manager.user_loader
+def load_user(user_id):
+    return UserInfo.query.get(int(user_id))
+
 
 class DogFood(db.Model):
     id = db.Column(db.Integer, primary_key=True )
@@ -21,12 +36,44 @@ class DogFood(db.Model):
     def __repr__(self):
         return '<Food %r>' % self.id
 
-class UserInfo(db.Model):
+class UserInfo(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     dogFoods = db.relationship('DogFood', backref='user_info', lazy=True)
+    pets = db.relationship('Pets', backref='user_info', lazy=True)
+
+class RegisterForm(FlaskForm):
+    username = StringField(validators=[InputRequired(), Length(
+        min=4, max=20)], render_kw={"placeholder": "Username"})
+
+    password = PasswordField(validators=[InputRequired(), Length(
+        min=4, max=20)], render_kw={"placeholder": "Password"})
     
+    submit = SubmitField("Register")
+
+    def validate_username(self, username):
+        existing_user_username = UserInfo.query.filter_by(
+            username=username.data).first()
+        if existing_user_username:
+            raise ValidationError(
+                "That username already exists. Please choose a different one.")
+
+class LoginForm(FlaskForm):
+    username = StringField(validators=[InputRequired(), Length(
+        min=4, max=20)], render_kw={"placeholder": "Username"})
+
+    password = PasswordField(validators=[InputRequired(), Length(
+        min=4, max=20)], render_kw={"placeholder": "Password"})
+    
+    submit = SubmitField("Login")
+
+class Pets(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user_info.id'), nullable=False)
+    weight = db.Column(db.Integer, nullable=False)
+    date_logged = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 
@@ -34,55 +81,61 @@ class UserInfo(db.Model):
 @app.route("/login", methods=['POST','GET'])
 def userLogin():
 
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = None
+    form =  LoginForm()
 
-        try:
-            user = UserInfo.query.filter_by(username=username).first_or_404()
-            global userId
-            userId = user.id
-            if(check_password_hash(user.password, password)):
-                 return redirect("/")
-            else:
-                return "Incorrect Password"
+    if form.validate_on_submit():
+        user = UserInfo.query.filter_by(username=form.username.data).first_or_404()
+    
+        if(check_password_hash(user.password, form.password.data)):
+            login_user(user)
+            return redirect(url_for('dashboard'))
+        else:
+            return "Incorrect Password"
 
-        except:
-            return "Username does not exist"
-
-    return render_template('login.html')
+    return render_template('login.html', form=form)
 
 @app.route("/register", methods=['POST','GET'])
 def userRegister():
+    error = None
+    form = RegisterForm()
+    
+    if not form.username.data:
+        error = 'Username is required'
+    elif not form.password.data:
+        error = 'Password is required'
 
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        error = None
+    if error is None:
+        new_user = UserInfo(username=form.username.data, password=generate_password_hash(form.password.data))
 
-        if not username:
-            error = 'Username is required'
-        elif not password:
-            error = 'Password is required'
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for('userLogin'))
+        except:
+            return "There was an error creating your account"
 
-        if error is None:
-            new_user = UserInfo(username=username, password=generate_password_hash(password))
 
-            try:
-                db.session.add(new_user)
-                db.session.commit()
-                return redirect(url_for('userLogin'))
-            except:
-                return "There was an error creating your account"
-    else:
-        
-        return render_template('register.html')
+
+    return render_template('register.html', form=form)
+
+@app.route("/dashboard", methods=["GET", "POST"])
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
+
+
+@app.route("/logout", methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('userLogin'))
+
 
 @app.route("/", methods=['POST', 'GET'])
+@login_required
 def index():
 
-    userId = 1
+    userId = current_user.id
 
     petName = "Thor"
 
@@ -120,6 +173,12 @@ def delete(id):
     except:
         return "There was a problem deleting that item."
 
+@app.route("/weight-data/<int:id>", methods=["POST", "GET"])
+def weight(id):
+
+    userName = UserInfo.query.get_or_404(id)
+
+    return jsonify({"user" : userName.username})
 
 if __name__ =="__main__":
     app.run(debug=True)

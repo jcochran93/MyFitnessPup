@@ -12,10 +12,11 @@
             
             <h2 class="register">Register</h2>
             <!-- may need to add action -->
-            <form  method="post">
-                <input type="text" name="username" id="username" required placeholder="username">
-                <input type="password" name="password" id="password" required placeholder="password">
-                <input type="submit" value="Register">
+            <form  method="post" action="">
+                {{ form.hidden_tag() }}
+                {{ form.username }}
+                {{ form.password }}
+                {{ form.submit }}
             </form>
             <a href="{{ url_for('userLogin') }}" class="text">Login</a>
         </div>

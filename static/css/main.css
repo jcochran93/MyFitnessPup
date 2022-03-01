@@ -41,6 +41,7 @@ body {
     
 }
 
+
 .header a {
     padding-right: 1em;
     text-decoration: none;
@@ -55,11 +56,17 @@ body {
     color: var(--dark-gray);
 }
 
+.userName {
+    position: absolute;
+    left: 1px;
+    z-index: 11;
+}
+
 
 .meal-items {
     display: inline-block;
     padding-left: 1rem;
-    width: 40%;
+    min-width: 40%;
     margin-right: 5px;
     
 }
@@ -90,11 +97,12 @@ h3 {
 }
 
 .cal-amount{
-    margin-left: auto;
-    /* margin-right: 2em; */
+    /* margin-left: auto; */
+    margin-right: 2em;
 }
 
 .delete-btn {
+    display: flex;
     margin-left: auto;
     margin-right: .3em;
 }

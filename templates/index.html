@@ -7,6 +7,9 @@
 {% block body %}
 
     <div class="header">
+    
+        <div id="userName" class="userName"> Hello {{ current_user.username }} </div>
+        
         <a href="#">
             <div class="head-btns">Home</div>
         </a>
@@ -16,10 +19,16 @@
         <a href="#">
             <div class="head-btns">Pets</div>
         </a>
-        <a href="{{ url_for('userLogin') }}">
+        <a href="{{ url_for('logout') }}">
             <div class="head-btns">Sign out</div>
         </a>
         
+
+    </div>
+
+    <div class="pets">
+
+
     </div>
 
 
@@ -30,16 +39,16 @@
             </div>
             
             {% for food in foods %}
-                {% if food.meal == 'breakfast' %}
+                {% if food.meal == 'breakfast' and current_user.id == food.user_id %}
                     <div class="logged-item"> 
                         <div class="item-name">
                             {{ food.brandName }}
                         </div>
-                        <div class="cal-amount">
-                            {{ food.calories }}
-                        </div>
-
+                        
                         <div class="delete-btn">
+                            <div class="cal-amount">
+                                {{ food.calories }}
+                            </div>
                             <a href="/delete/{{food.id}}"> X </a>
                         </div>        
                     </div>
@@ -59,11 +68,11 @@
                         <div class="item-name">
                             {{ food.brandName }}
                         </div>
-                        <div class="cal-amount">
-                            {{ food.calories }}
-                        </div>
-
+                        
                         <div class="delete-btn">
+                            <div class="cal-amount">
+                                {{ food.calories }}
+                            </div>
                             <a href="/delete/{{food.id}}"> X </a>
                         </div>        
                     </div>
@@ -82,11 +91,11 @@
                         <div class="item-name">
                             {{ food.brandName }}
                         </div>
-                        <div class="cal-amount">
-                            {{ food.calories }}
-                        </div>
-
+                        
                         <div class="delete-btn">
+                            <div class="cal-amount">
+                                {{ food.calories }}
+                            </div>
                             <a href="/delete/{{food.id}}"> X </a>
                         </div>        
                     </div>
@@ -155,23 +164,13 @@
             </div>
         </div>
 
-
-        
-
     </div>
 
     
-
-
-
-
-
     <div class="progress" id="progress">
         <h3>Progress</h3>
         <div class="chart">Weight Data</div>
         <div id="tester" style="width:600px;height:400px;"></div>
     </div>
-
-
 
 {% endblock %}
