@@ -63,7 +63,7 @@
             </div>
 
             {% for food in foods %}
-                {% if food.meal == 'lunch' %}
+                {% if food.meal == 'lunch' and current_user.id == food.user_id %}
                     <div class="logged-item"> 
                         <div class="item-name">
                             {{ food.brandName }}
@@ -86,7 +86,7 @@
                 
             </div>
             {% for food in foods %}
-                {% if food.meal == 'dinner' %}
+                {% if food.meal == 'dinner' and current_user.id == food.user_id %}
                     <div class="logged-item"> 
                         <div class="item-name">
                             {{ food.brandName }}
@@ -110,7 +110,7 @@
         
             </div>
             {% for food in foods %}
-                {% if food.meal == 'exercise' %}
+                {% if food.meal == 'exercise' and current_user.id == food.user_id %}
                     <div class="logged-item"> 
                         <div class="item-name">
                             {{ food.brandName }}
