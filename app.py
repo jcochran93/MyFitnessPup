@@ -121,7 +121,9 @@ def userRegister():
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+
+    pets = Pets.query.all()
+    return render_template('dashboard.html', pets=pets)
 
 
 @app.route("/logout", methods=['GET', 'POST'])
@@ -162,6 +164,7 @@ def index():
 
 
 @app.route("/delete/<int:id>")
+@login_required
 def delete(id):
     food_to_delete = DogFood.query.get_or_404(id)
 

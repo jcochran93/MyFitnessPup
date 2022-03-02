@@ -10,4 +10,20 @@
 <a href="{{ url_for('index') }} ">Home Page</a>
 <a href="{{ url_for('logout') }}">Logout</a>
 
+<div class="pet-window">
+    <h2>Pets</h2>
+
+    <form action="" method="post">
+        {% for pet in pets %}
+            {% if current_user_id == pet.user_id %}
+                <input type="radio" name="{{ pet }}" id="{{ pet.name }}">
+                <label for="{{ pet.name }}">{{ pet.name }}</label>
+                
+            {% endif %}
+        {% endfor %}
+        <input type="submit" value="Submit">
+    </form>
+
+</div>
+
 {% endblock %}
