@@ -10,20 +10,40 @@
 <a href="{{ url_for('index') }} ">Home Page</a>
 <a href="{{ url_for('logout') }}">Logout</a>
 
-<div class="pet-window">
+<div class="window">
+    <div class="pet-window">
     <h2>Pets</h2>
 
     <form action="" method="post">
-        {% for pet in pets %}
-            {% if current_user_id == pet.user_id %}
-                <input type="radio" name="{{ pet }}" id="{{ pet.name }}">
-                <label for="{{ pet.name }}">{{ pet.name }}</label>
-                
-            {% endif %}
+        {% for pet in pet_list %}
+            
+            <input data-pet type="radio" name="pet-name" id="{{ pet.name }}" value="{{ pet.name }}">
+            <label for="{{ pet.name }}">{{ pet.name }}</label>           
         {% endfor %}
+
+        {% if numberOfPets != 0 %}
+        <input type="submit" value="Select"><br><br><br>
+        {% endif %}
+
+        <input type="text" name="new-pet" placeholder="Or add another pet" id="new-pet">
         <input type="submit" value="Submit">
     </form>
-
+    </div>
 </div>
+
+<script>
+
+    // Only submit the value of an existing pet or the name of a new pet
+    const textInput = document.querySelector('input[name="new-pet"]');
+    const radioButtons = document.querySelectorAll('input[type="radio"]');
+
+    textInput.addEventListener('change', (event) => {
+        for( let i =0; i < radioButtons.length; i++){
+            radioButtons[i].checked = false
+        }
+    })
+
+
+</script>
 
 {% endblock %}

@@ -2,6 +2,10 @@
 
 {% block head %}
     <title>Lose It</title>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='script.js') }}" defer></script>
+
 {% endblock %}
 
 {% block body %}
@@ -16,7 +20,7 @@
         <a href="#progress">
             <div class="head-btns">Progress</div>
         </a>
-        <a href="#">
+        <a href="{{ url_for('dashboard') }}">
             <div class="head-btns">Pets</div>
         </a>
         <a href="{{ url_for('logout') }}">
@@ -39,7 +43,7 @@
             </div>
             
             {% for food in foods %}
-                {% if food.meal == 'breakfast' and current_user.id == food.user_id %}
+                {% if food.meal == 'breakfast' and petId == food.pet_id and current_user.id == ownerId %}
                     <div class="logged-item"> 
                         <div class="item-name">
                             {{ food.brandName }}
@@ -63,7 +67,7 @@
             </div>
 
             {% for food in foods %}
-                {% if food.meal == 'lunch' and current_user.id == food.user_id %}
+                {% if food.meal == 'lunch' and petId == food.pet_id and current_user.id == ownerId %}
                     <div class="logged-item"> 
                         <div class="item-name">
                             {{ food.brandName }}
@@ -86,7 +90,7 @@
                 
             </div>
             {% for food in foods %}
-                {% if food.meal == 'dinner' and current_user.id == food.user_id %}
+                {% if food.meal == 'dinner' and petId == food.pet_id and current_user.id == ownerId %}
                     <div class="logged-item"> 
                         <div class="item-name">
                             {{ food.brandName }}
@@ -110,7 +114,7 @@
         
             </div>
             {% for food in foods %}
-                {% if food.meal == 'exercise' and current_user.id == food.user_id %}
+                {% if food.meal == 'exercise' and petId == food.pet_id and current_user.id == ownerId  %}
                     <div class="logged-item"> 
                         <div class="item-name">
                             {{ food.brandName }}
@@ -132,7 +136,7 @@
         <div class="calorie-window">
             <div class="head">
                 <!-- Add {{ petName }}'s Meals Here -->
-                Add Meals Here
+                Add {{ petName }}'s Meals Here
 
             </div>
 

@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request, render_template, url_for, redirect
+from email.policy import default
+from flask import Flask, jsonify, request, render_template, url_for, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -25,11 +26,10 @@ def load_user(user_id):
 
 class DogFood(db.Model):
     id = db.Column(db.Integer, primary_key=True )
-    user_id = db.Column(db.Integer, db.ForeignKey('user_info.id'), nullable=False)
+    pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'), nullable=False)
     brandName = db.Column(db.String(50), nullable=False)
     calories = db.Column(db.Integer, default=300, nullable=False)
     meal = db.Column(db.String(15), nullable=False)
-    pet = db.Column(db.String(50), nullable=False, default="Thor")
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     
 
@@ -40,7 +40,6 @@ class UserInfo(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
-    dogFoods = db.relationship('DogFood', backref='user_info', lazy=True)
     pets = db.relationship('Pets', backref='user_info', lazy=True)
 
 class RegisterForm(FlaskForm):
@@ -72,7 +71,13 @@ class Pets(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('user_info.id'), nullable=False)
-    weight = db.Column(db.Integer, nullable=False)
+    food = db.relationship('DogFood', backref='dog_food', lazy=True)
+    weight = db.relationship('PetWeight', backref='pet_weight', lazy=True)
+
+class PetWeight(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'), nullable=False)
+    weight = db.Column(db.Integer, nullable=False, default=0)
     date_logged = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -122,13 +127,34 @@ def userRegister():
 @login_required
 def dashboard():
 
-    pets = Pets.query.all()
-    return render_template('dashboard.html', pets=pets)
+    pets = Pets.query.filter_by(owner_id = current_user.id)
+    numberOfPets = pets.count()
+    # print(pets)
+
+    
+    if request.method == 'POST':
+        # Get the name of an existing pet 
+        # or create a new pet for the current user
+        pet_name = request.form['new-pet'] or request.form['pet-name']
+    
+        if pet_name == request.form['new-pet']:
+            newPet = Pets(name=pet_name, owner_id=current_user.id)
+            db.session.add(newPet)
+            db.session.commit()
+        session["pet_name"] = pet_name
+        currentPet = Pets.query.filter_by(name = pet_name, owner_id = current_user.id ).first()      
+        session["pet_id"] = currentPet.id
+        return redirect(url_for('index'))
+
+    else:
+        
+        return render_template('dashboard.html', pet_list=pets, numberOfPets=numberOfPets)
 
 
 @app.route("/logout", methods=['GET', 'POST'])
 @login_required
 def logout():
+    session.clear()
     logout_user()
     return redirect(url_for('userLogin'))
 
@@ -139,14 +165,16 @@ def index():
 
     userId = current_user.id
 
-    petName = "Thor"
+    petName = session.get("pet_name")
+    petId = session.get("pet_id")
+
 
     if request.method =='POST':
         food_content = request.form['content']
         meal_content = request.form['meal']
         kcals = request.form['calories']
 
-        new_food = DogFood(brandName=food_content, meal=meal_content, calories=kcals, user_id=userId)
+        new_food = DogFood(pet_id=petId, brandName=food_content, meal=meal_content, calories=kcals)
         
         if new_food.calories == '':
             new_food.calories = 0
@@ -159,8 +187,9 @@ def index():
             return "There was a problem adding your food."
 
     else:
-        foods = DogFood.query.order_by(DogFood.date_created).all()
-        return render_template('index.html', foods=foods, petName=petName)
+        foods = DogFood.query.filter_by(pet_id=petId).order_by(DogFood.date_created).all()
+        petOwner = Pets.query.filter_by(id=petId).first()
+        return render_template('index.html', foods=foods, petName=petName, petId=petId, ownerId=petOwner.owner_id)
 
 
 @app.route("/delete/<int:id>")
