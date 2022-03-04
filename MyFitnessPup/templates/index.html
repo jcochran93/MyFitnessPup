@@ -137,7 +137,6 @@
             <div class="head">
                 <!-- Add {{ petName }}'s Meals Here -->
                 Add {{ petName }}'s Meals Here
-
             </div>
 
             <div class="food-input">
@@ -170,6 +169,18 @@
 
     </div>
 
+    <div class="weight-window">
+        <div class="head">
+            Log {{ petName }}'s Weight
+        </div>
+
+        <form action="/weight" method="post">
+        <input type="date" name="date" id="date">
+        <input type="number" name="weight" id="">
+        <input type="submit">
+        </form>
+
+    </div>
     
     <div class="progress" id="progress">
         <h3>Progress</h3>
