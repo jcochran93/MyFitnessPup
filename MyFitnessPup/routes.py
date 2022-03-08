@@ -113,6 +113,7 @@ def index():
 
     petName = session.get("pet_name")
     petId = session.get("pet_id")
+    selectedDate = session.get("date") or datetime.utcnow()
 
     if request.method == "POST":
         foodContent = request.form["content"]
@@ -144,6 +145,7 @@ def index():
             petName=petName,
             petId=petId,
             ownerId=petOwner.owner_id,
+            date=selectedDate,
         )
 
 
@@ -185,5 +187,19 @@ def weight():
             data[date] = history.weight
 
         return jsonify({"weight": data})
+
+    return redirect("/")
+
+
+@app.route("/date", methods=["POST", "GET"])
+@login_required
+def date():
+
+    if request.method == "POST":
+
+        content = request.json
+        # print(content)
+
+    session["date"] = content["date"][:10]
 
     return redirect("/")

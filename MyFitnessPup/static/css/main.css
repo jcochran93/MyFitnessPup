@@ -71,11 +71,24 @@ body {
   border-radius: 2px;
 }
 
-.meal-title {
+.meal-title,
+.calendar {
   background-color: var(--entry-color);
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.6);
   max-height: 2rem;
   display: flex;
+}
+
+.cal-items-content {
+  width: 7rem;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+  margin-left: 40%;
+}
+
+.calendar {
+  padding: 0.2rem;
 }
 
 h3 {

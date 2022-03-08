@@ -37,6 +37,14 @@
 
 
     <div class="meal-items">
+        <div class="cal-items-content">
+        <div class="calendar">
+            <button class="button" data-prev-day> &#60; </button>
+            <div class="date"  style="padding-left: .5rem; padding-right: .5rem;" data-date></div>
+            <button class="button" data-next-day> &#62; </button>
+        </div>
+        </div>
+
         <div class="meal-entry">
             <div class="meal-title">
                 <h3>Breakfast</h3>
@@ -185,7 +193,7 @@
     <div class="progress" id="progress">
         <h3>Progress</h3>
         <div class="chart">Weight Data</div>
-        <div id="tester" style="width:600px;height:400px;"></div>
+        <div id="tester" style="width:100%;height:100%;"></div>
     </div>
 
 {% endblock %}
